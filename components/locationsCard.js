@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getWidth, getHeight } from '../utils/getWidth';
 import { fill, outline } from '../constants/Icons';
+import CardModal from './modalCard'
 
 
 class LocationsCard extends Component {
@@ -39,6 +40,9 @@ class LocationsCard extends Component {
     deletePlace = style => {
         return <SvgUri style={{ fill: '#f86b7e', width: 24, height: 24 }} uri={outline.minus} />;
     }
+    deletePlaceFill = style => {
+        return <SvgUri style={{ fill: '#f86b7e', width: 24, height: 24 }} uri={fill.minus} />;
+    }
     handleChangeText = value => {
         this.setState({ location: value, typing: true })
     }
@@ -55,6 +59,13 @@ class LocationsCard extends Component {
         this.setState(prevState => ({
             confirmDelete: !prevState.confirmDelete
         }))
+    }
+
+    onHandleContinue = () => {
+        this.props.navigation.navigate('DropOff')
+        this.setState({
+            confirmDelete: false
+        })
     }
     render() {
         return (
@@ -80,7 +91,7 @@ class LocationsCard extends Component {
                             <Text onPress={() => this.props.navigation.navigate('GetRide')} style={{ marginTop: 25, marginLeft: 40, color: "#c1c1c1" }}>Tap to select from map</Text>
                             <Button
                                 style={[{ marginTop: 0 }, styles.buttonContinue]}
-                                onPress={() => this.props.navigation.navigate('DropOff')}
+                                onPress={this.onHandleContinue}
                                 icon={this.buttonIcon}
                             />
                         </View>
@@ -102,7 +113,7 @@ class LocationsCard extends Component {
                             </View>
                             <Button style={styles.deletePlace}
                                 onPress={this.onHandleDeleteModal}
-                                icon={this.deletePlace}
+                                icon={this.state.confirmDelete ? this.deletePlaceFill : this.deletePlace}
                             />
                         </View>
                         <View style={{ marginTop: 25 }}>
@@ -120,20 +131,7 @@ class LocationsCard extends Component {
                         </View>
                     </View>
                 </View>
-                    <Modal style={styles.cardModal} visible={this.state.confirmDelete}>
-                        <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-                            <Text style={styles.modalText} category='s1'>Delete Favourite</Text>
-                            <Text style={[{ color: '#94959a' }, styles.modalText]} category='c1'>Are you sure you want to delete?</Text>
-                        </View>
-                        <View>
-                            <Button style={styles.modalButtons} status="basic">
-                                Yes
-                            </Button>
-                            <Button style={[{ position: 'absolute', right: 0 }, styles.modalButtons]} status="basic">
-                                No
-                            </Button>
-                        </View>
-                    </Modal>
+                <CardModal hidden={this.state.confirmDelete} />
             </View>
         )
     }
@@ -148,7 +146,7 @@ export const styles = StyleSheet.create({
     input: {
         borderColor: '#dddddd',
         marginTop: 5,
-        height: 45,
+        height: '35%',
         backgroundColor: '#fff',
     },
     titleFont: {
@@ -182,7 +180,6 @@ export const styles = StyleSheet.create({
         },
         shadowOpacity: 0.58,
         shadowRadius: 16.00,
-
         elevation: 24,
         marginTop: getHeight(100) - 168
 
